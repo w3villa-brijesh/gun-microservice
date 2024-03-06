@@ -117,18 +117,22 @@ app.delete('/data', (req, res) => {
 
 
 function verifyToken(req, res, next) {
-    const bearerHeader = req.headers['token'];
-    if (typeof bearerHeader !== 'undefined') {
-        jwt.verify(bearerHeader, process.env.JWT_SECRET, (err, authData) => {
-            if (err) {
-                console.log(err)
-                res.sendStatus(403); 
-            } else {
-                req.authData = authData;
-                next();
-            }
-        });
-    } else {
-        res.sendStatus(401); 
+    try {
+        const bearerHeader = req.headers['token'];
+        if (typeof bearerHeader !== 'undefined') {
+            jwt.verify(bearerHeader, process.env.JWT_SECRET, (err, authData) => {
+                if (err) {
+                    res.status(403).send('Unauthorized access');
+                } else {
+                    req.authData = authData;
+                    next();
+                }
+            });
+        } else {
+            res.sendStatus(401); 
+        }
+    } catch (error) {
+        console.error("Error verifying token:", error);
+        res.status(500).send("Internal Server Error");
     }
 }
