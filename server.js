@@ -50,8 +50,7 @@ app.post('/login', (req, res) => {
         } else {
             // User authenticated successfully, issue JWT
             const token = jwt.sign({ username }, process.env.JWT_SECRET, { expiresIn: '24h' });
-            console.log("=============",token)
-            return token
+            res.status(200).send({"message": "Login Sucessfull", "token": token})
         }
     });
 });
